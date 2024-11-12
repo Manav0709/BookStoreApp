@@ -62,7 +62,7 @@ const Navbar = () => {
       <div
         className={`max-w-screen-2xl container mx-auto dark:bg-[#181C14] dark:text-white  md:px-20 z-50 px-4 fixed top-0 left-0 right-0 ${
           sticky
-            ? "sticky-navbar shadow-md bg-base-200 duration-300 transition-all "
+            ? "sticky-navbar shadow-md dark:bg-primaryDark dark:border-b-[0.5px] border-secondaryDark bg-base-200 duration-300 transition-all "
             : ""
         }`}
       >
@@ -106,7 +106,7 @@ const Navbar = () => {
               <ul className="menu menu-horizontal px-1">{navItems}</ul>
             </div>
             <div className="hidden md:block">
-              <label className="input input-bordered dark:bg-primaryDark dark:text-white  flex items-center gap-2">
+              <label className="input input-bordered dark:bg-secondaryDark dark:text-white  flex items-center gap-2">
                 <input type="text" className="grow " placeholder="Search" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
