@@ -6,7 +6,7 @@ export const signup = async (req, res) => {
     const { fullname, email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
-      res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
     const hashedPassword = await bcryptjs.hash(password, 10);
 
@@ -35,19 +35,27 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password." });
+    }
+
     const isMatch = await bcryptjs.compare(password, user.password);
 
-    if (!user || !isMatch) {
-      res.status(400).json({ message: "Invalid email or password." });
-    } else {
-      res.status(200).json({
-        message: "Logged in successfully",
-        user: {
-          id: user._id,
-          fullname: user.fullname,
-          email: user.email,
-        },
-      });
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password." });
     }
-  } catch (error) {}
+
+    res.status(200).json({
+      message: "Logged in successfully",
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
