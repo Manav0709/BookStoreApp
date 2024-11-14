@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Login = () => {
   const {
@@ -8,12 +10,34 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log(data); // Log the form data to the console
-    document.getElementById("my_modal_3").close(); // Close the modal after submission
-    navigate("/"); // Redirect to the homepage
+  const onSubmit = async (data) => {
+    try {
+      const userInfo = {
+        email: data.email,
+        password: data.password,
+      };
+      const res = await axios.post(
+        "http://localhost:4001/user/login",
+        userInfo
+      );
+      console.log(res.data);
+
+      if (res.data) {
+        toast.success("Logged in Successfully");
+        localStorage.setItem("Users", JSON.stringify(res.data.user));
+        setTimeout(() => {
+          navigate("/"); // Redirect to the homepage or desired route
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err);
+        toast.error("Error: " + err.response.data.message);
+      }
+    }
   };
 
   return (
@@ -22,7 +46,7 @@ const Login = () => {
         <div className="modal-box dark:bg-[#181C14] dark:text-white">
           <button
             className="btn btn-sm btn-circle outline-none btn-ghost absolute right-2 top-2"
-            onClick={() => document.getElementById("my_modal_3").close()} // Close the modal on click
+            onClick={() => document.getElementById("my_modal_3").close()}
           >
             ✕
           </button>
@@ -36,7 +60,6 @@ const Login = () => {
               {...register("email", { required: "Email is required" })}
               className="outline-none bg-slate-200 w-full mt-1 dark:bg-secondaryDark py-2 rounded-md px-2"
             />
-            <br />
             {errors.email && (
               <span className="text-sm text-red-600">
                 {errors.email.message}
@@ -50,7 +73,6 @@ const Login = () => {
               {...register("password", { required: "Password is required" })}
               className="outline-none bg-slate-200 w-full mt-1 py-2 dark:bg-secondaryDark rounded-md px-2"
             />
-            <br />
             {errors.password && (
               <span className="text-sm text-red-600">
                 {errors.password.message}
